@@ -1,105 +1,81 @@
 // 'use client';
 
-// import { useState, useEffect } from 'react';
+// import { useEffect, useState } from 'react';
 
-// // Key for local storage
 // const THEME_KEY = 'gsoc-theme';
 
 // export default function ThemeToggle() {
-//   // Initialize state based on local storage or system preference
-//   const [theme, setTheme] = useState(() => {
-//     if (typeof window !== 'undefined') {
-//       const storedTheme = localStorage.getItem(THEME_KEY);
-//       if (storedTheme) return storedTheme;
+//   // `null` means "not initialized yet" — prevents SSR/CSR hydration mismatch
+//   const [theme, setTheme] = useState(null);
 
-//       // Check system preference if no theme is stored
-//       if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-//         return 'dark';
-//       }
-//     }
-//     return 'light';
-//   });
-
-//   // Effect to apply the 'dark' class to the root HTML element
+//   // On mount: read stored theme or system preference and initialize state
 //   useEffect(() => {
+//     if (typeof window === 'undefined') return;
+
+//     const stored = localStorage.getItem(THEME_KEY);
+//     if (stored === 'light' || stored === 'dark') {
+//       setTheme(stored);
+//       return;
+//     }
+
+//     // No stored preference -> use system preference
+//     const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+//     setTheme(prefersDark ? 'dark' : 'light');
+//   }, []);
+
+//   // Apply theme to <html> and persist to localStorage whenever theme changes
+//   useEffect(() => {
+//     if (theme === null || typeof document === 'undefined') return;
+
 //     const root = document.documentElement;
 //     if (theme === 'dark') {
 //       root.classList.add('dark');
 //     } else {
 //       root.classList.remove('dark');
 //     }
-//     localStorage.setItem(THEME_KEY, theme);
+
+//     try {
+//       localStorage.setItem(THEME_KEY, theme);
+//     } catch (e) {
+//       // Ignore localStorage errors (e.g., in strict privacy modes)
+//       // console.warn('Could not persist theme', e);
+//     }
 //   }, [theme]);
 
+//   // Toggle between light and dark
 //   const toggleTheme = () => {
-//     setTheme(currentTheme => (currentTheme === 'light' ? 'dark' : 'light'));
+//     setTheme((t) => (t === 'dark' ? 'light' : 'dark'));
 //   };
+
+//   // If not initialized yet, render a placeholder to avoid mismatched markup
+//   if (theme === null) {
+//     return (
+//       <button
+//         className="p-2 rounded-md transition-colors text-lg bg-gray-100 dark:bg-gray-700"
+//         aria-hidden="true"
+//       >
+//         {/* lightweight placeholder */}
+//         🌗
+//       </button>
+//     );
+//   }
 
 //   return (
 //     <button
 //       onClick={toggleTheme}
-//       className="p-2 rounded-md transition-colors 
-//                  bg-gray-200 hover:bg-gray-300 text-gray-800
-//                  dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
+//       onKeyDown={(e) => {
+//         if (e.key === 'Enter' || e.key === ' ') {
+//           e.preventDefault();
+//           toggleTheme();
+//         }
+//       }}
+//       aria-pressed={theme === 'dark'}
 //       aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
+//       className="p-2 rounded-md transition-colors text-lg
+//                  bg-gh-light-dark hover:bg-gray-300 text-gh-dark
+//                  dark:bg-gh-dark-light dark:hover:bg-gh-dark dark:text-gh-light"
 //     >
-//       {/* Sun or Moon icon based on current theme */}
 //       {theme === 'light' ? '🌙' : '☀️'}
 //     </button>
 //   );
 // }
-
-
-
-
-'use client';
-
-import { useState, useEffect } from 'react';
-
-const THEME_KEY = 'gsoc-theme';
-
-export default function ThemeToggle() {
-  const [theme, setTheme] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const storedTheme = localStorage.getItem(THEME_KEY);
-      if (storedTheme) return storedTheme;
-
-      // Check system preference if no theme is stored
-      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        return 'dark';
-      }
-    }
-    return 'light';
-  });
-
-  // CRITICAL STEP 1: Apply 'dark' class to the root HTML element
-  useEffect(() => {
-    const root = document.documentElement;
-    if (theme === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
-    localStorage.setItem(THEME_KEY, theme);
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme(currentTheme => (currentTheme === 'light' ? 'dark' : 'light'));
-  };
-
-  return (
-    <button
-      onClick={toggleTheme}
-      className="p-2 rounded-md transition-colors font-bold text-lg
-                 bg-gh-light-dark hover:bg-gray-300 text-gh-dark
-                 dark:bg-gh-dark-light dark:hover:bg-gh-dark dark:text-gh-light"
-      aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
-    >
-      {theme === 'light' ? '🌙' : '☀️'}
-    </button>
-  );
-}
-
-
-
-

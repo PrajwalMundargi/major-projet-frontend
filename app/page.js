@@ -1,13 +1,6 @@
-'use client'; 
-// Use the 'use client' directive because this page manages interactive state 
-// for search, filters, and passes props down.
+'use client';
 
-import { useState } from 'react';
-
-// Import necessary components (assuming they are in '../components/')
-// NOTE: Navbar is typically rendered in the app/layout.js, but including it here 
-// for completeness if you choose to render it page-specific.
-// If you put Navbar in layout.js (recommended), you can remove this import.
+import { useState, useEffect } from 'react';
 import Navbar from './Components/Navbar';
 import SearchBar from './Components/SearchBar';
 import FilterTags from './Components/FilterTags';
@@ -15,87 +8,72 @@ import OrganizationList from './Components/OrganizationList';
 import ProfileOverview from './Components/ProfileOverview';
 import Footer from './Components/Footer';
 
-// --- Placeholder Data ---
-const dummyOrganizations = [
-  { id: 1, name: 'TechCorp Solutions', tags: ['AI', 'Machine Learning', 'Data Science'] },
-  { id: 2, name: 'OpenForge Foundation', tags: ['Open Source', 'Developer Tools', 'Cloud'] },
-  { id: 3, name: 'Neural Labs', tags: ['AI', 'Deep Learning', 'Research'] },
-  { id: 4, name: 'WebSphere Technologies', tags: ['Web', 'Frontend', 'JavaScript'] },
-  { id: 5, name: 'DataStream Analytics', tags: ['Data Science', 'Analytics', 'Visualization'] },
-  { id: 6, 'name': 'CodeCraft Academy', tags: ['Education', 'Learning', 'Open Source'] },
-  { id: 7, 'name': 'CloudNative Systems', tags: ['Cloud', 'DevOps', 'Infrastructure'] },
-  { id: 8, 'name': 'QuantumBridge Labs', tags: ['Quantum Computing', 'Research', 'AI'] },
-];
-
-// Extract all unique tags for the filter component
-const allTags = Array.from(new Set(dummyOrganizations.flatMap(org => org.tags)));
-// ------------------------
-
-
 export default function HomePage() {
-  // State to hold the user's search query
+  const [organizations, setOrganizations] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  // State to hold the tags currently selected by the user
   const [activeFilters, setActiveFilters] = useState([]);
-  
-  // --- Filtering and Search Logic ---
-  
-  const filteredOrganizations = dummyOrganizations.filter(org => {
-    // 1. Check for search term match (case-insensitive)
-    const searchMatch = org.name.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    // 2. Check for filter tag match
-    // If no filters are active, we consider it a match.
-    const tagMatch = activeFilters.length === 0 || 
-                     org.tags.some(tag => activeFilters.includes(tag));
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    return searchMatch && tagMatch;
+  // Fetch data from Flask backend
+  useEffect(() => {
+    fetch('http://127.0.0.1:5000/api/organizations')
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to fetch organizations');
+        return res.json();
+      })
+      .then((data) => setOrganizations(data))
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, []);
+
+  // Create list of all tags dynamically
+  const allTags = Array.from(new Set(organizations.flatMap((org) => org.tech_tags || [])));
+
+  // --- Filtering + Search ---
+  const filteredOrganizations = organizations.filter((org) => {
+    const nameMatch = org.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const tagMatch =
+      activeFilters.length === 0 ||
+      (org.tech_tags || []).some((tag) => activeFilters.includes(tag));
+    return nameMatch && tagMatch;
   });
-  
-  // Function to toggle a filter tag on or off
+
   const handleTagToggle = (tag) => {
-    setActiveFilters(prevFilters => 
-      prevFilters.includes(tag)
-        ? prevFilters.filter(f => f !== tag) // Remove filter
-        : [...prevFilters, tag]             // Add filter
+    setActiveFilters((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
     );
   };
-  
-  // --- Component Rendering ---
-  
+
+  // --- Render ---
+  if (loading)
+    return <p className="text-center mt-10 text-gray-600 dark:text-gray-400">Loading organizations...</p>;
+
+  if (error)
+    return <p className="text-center mt-10 text-red-500">Error: {error}</p>;
+
   return (
-    // Apply dark mode transition to the container (if Navbar isn't in layout.js)
-    // If Navbar is in layout.js, ensure layout.js handles the dark:bg-gray-900 on the <body>
-    <div className="min-h-screen"> 
-      
-      {/* If you chose to put Navbar in app/layout.js, remove the line below. 
-        If you render it here, it will only appear on the homepage.
-      */}
+    <div className="min-h-screen">
       <Navbar />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <ProfileOverview />
 
-        <ProfileOverview /> 
-        
-        {/* Search Bar */}
         <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
-        {/* Filter Tags */}
-        <FilterTags 
+        <FilterTags
           allTags={allTags}
           activeFilters={activeFilters}
           onTagToggle={handleTagToggle}
         />
-        
-        {/* Results Count */}
+
         <p className="text-sm text-gray-600 dark:text-gray-400 mt-4 mb-6">
-          Showing {filteredOrganizations.length} of {dummyOrganizations.length} organizations
+          Showing {filteredOrganizations.length} of {organizations.length} organizations
         </p>
 
-        {/* Organization List */}
         <OrganizationList organizations={filteredOrganizations} />
-
       </div>
+
       <Footer />
     </div>
   );

@@ -1,56 +1,47 @@
-// // components/Footer.js
-
-// export default function Footer() {
-//   // Use Tailwind classes for styling, themeing, and layout
-//   return (
-//     <footer className="w-full mt-10 p-4 border-t border-gray-200 dark:border-gray-700 
-//                        bg-white dark:bg-gray-800 transition-colors duration-300">
-//       <div className="max-w-7xl mx-auto text-center">
-//         <p className="text-sm text-gray-600 dark:text-gray-400">
-//           Google Summer of Code Organizations Directory
-//         </p>
-//         <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-//           Discover open source projects and contribute to the community.
-//         </p>
-//         <div className="flex justify-center space-x-4 mt-2">
-//           {/* Example Links/Icons */}
-//           <a href="#" className="text-gray-500 hover:text-blue-500 dark:hover:text-blue-400 text-sm">
-//             About
-//           </a>
-//           <span className="text-gray-400 dark:text-gray-600">|</span>
-//           <a href="#" className="text-gray-500 hover:text-blue-500 dark:hover:text-blue-400 text-sm">
-//             GitHub
-//           </a>
-//         </div>
-//       </div>
-//     </footer>
-//   );
-// }
-
-
-
-
-// components/Footer.js
-
 export default function Footer() {
   return (
-    <footer className="w-full mt-10 p-4 border-t border-gh-light-dark dark:border-gh-dark-light 
-                       bg-gh-light dark:bg-gh-dark transition-colors duration-300">
-      <div className="max-w-7xl mx-auto text-center">
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          Google Summer of Code Organizations Directory
-        </p>
-        <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-          Discover open source projects and contribute to the community.
-        </p>
-        <div className="flex justify-center space-x-4 mt-2">
-          <a href="#" className="text-gray-500 hover:text-gh-primary dark:hover:text-gh-primary text-sm">
-            About
-          </a>
-          <span className="text-gray-400 dark:text-gray-600">|</span>
-          <a href="#" className="text-gray-500 hover:text-gh-primary dark:hover:text-gh-primary text-sm">
-            GitHub
-          </a>
+    <footer className="w-full mt-20 py-12 border-t border-slate-800/50 bg-slate-900/50 backdrop-blur-xl">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="flex flex-col items-center space-y-6">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+              </svg>
+            </div>
+            <div>
+              <span className="text-base font-bold text-white">GSoC Organizations</span>
+              <p className="text-xs text-slate-500">Google Summer of Code 2024</p>
+            </div>
+          </div>
+          
+          <p className="text-sm text-slate-400 text-center max-w-md">
+            Discover and contribute to 200+ open source projects from around the world
+          </p>
+          
+          <div className="flex items-center space-x-8 text-sm">
+            <a href="#" className="text-slate-400 hover:text-emerald-400 transition-colors font-medium flex items-center space-x-1">
+              <span>About</span>
+            </a>
+            <div className="w-1 h-1 rounded-full bg-slate-700"></div>
+            <a href="#" className="text-slate-400 hover:text-emerald-400 transition-colors font-medium flex items-center space-x-1">
+              <span>GitHub</span>
+            </a>
+            <div className="w-1 h-1 rounded-full bg-slate-700"></div>
+            <a href="#" className="text-slate-400 hover:text-emerald-400 transition-colors font-medium flex items-center space-x-1">
+              <span>Documentation</span>
+            </a>
+            <div className="w-1 h-1 rounded-full bg-slate-700"></div>
+            <a href="#" className="text-slate-400 hover:text-emerald-400 transition-colors font-medium flex items-center space-x-1">
+              <span>Contact</span>
+            </a>
+          </div>
+          
+          <div className="pt-6 border-t border-slate-800/50 w-full text-center">
+            <p className="text-xs text-slate-600">
+              © 2024 Google Summer of Code. Built with passion for open source.
+            </p>
+          </div>
         </div>
       </div>
     </footer>

@@ -46,8 +46,8 @@ export default function OrganizationList({ organizations }) {
   return (
     // Responsive Grid: 1 column on mobile, 2 on medium, 3 on large screens
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {organizations.map(org => (
-        <OrganizationCard key={org.id} organization={org} />
+      {organizations.map((org, idx)=> (
+        <OrganizationCard key={idx} organization={org} />
       ))}
       
       {organizations.length === 0 && (
