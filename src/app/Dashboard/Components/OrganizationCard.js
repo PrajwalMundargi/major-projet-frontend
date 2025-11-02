@@ -1,4 +1,9 @@
+'use client';
+
+import { useRouter } from 'next/navigation';
+
 export default function OrganizationCard({ organization }) {
+  const router = useRouter();
   const {
     name,
     tagline,
@@ -6,12 +11,25 @@ export default function OrganizationCard({ organization }) {
     tech_tags = [],
     github_url,
     website_url,
+    slug, // Optional: if your org has a specific slug, prefer using this
   } = organization;
 
+  // On card click, navigate to the dynamic route for the company
+  const handleCardClick = () => {
+    // Prefer slug if available, else encode company name for URL
+    const orgParam = slug || name;
+    router.push(`/Dashboard/${encodeURIComponent(orgParam)}`);
+  };
+
   return (
-    <div className="p-6 border border-gray-200 dark:border-gray-700 rounded-xl 
-                    bg-white dark:bg-gray-800 shadow-md hover:shadow-lg transition-shadow 
-                    flex flex-col h-full">
+    <div
+      className="p-6 border border-gray-200 dark:border-gray-700 rounded-xl 
+                 bg-white dark:bg-gray-800 shadow-md hover:shadow-lg transition-shadow 
+                 flex flex-col h-full cursor-pointer"
+      onClick={handleCardClick}
+      style={{ cursor: 'pointer' }}
+      title={name}
+    >
       <div className="flex justify-between items-start mb-3">
         <img
           src={logo_url || 'https://via.placeholder.com/80?text=No+Logo'}
@@ -25,6 +43,7 @@ export default function OrganizationCard({ organization }) {
             rel="noopener noreferrer"
             className="text-gray-800 dark:text-gray-100 hover:text-blue-500 transition-colors"
             aria-label={`View ${name} on GitHub`}
+            onClick={e => e.stopPropagation()} // Prevents opening both links (card and GitHub)
           >
             <svg
               className="w-6 h-6"
@@ -50,7 +69,7 @@ export default function OrganizationCard({ organization }) {
           <span
             key={tag}
             className="px-2 py-0.5 text-xs font-medium rounded-full 
-                       bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
+                      bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
           >
             {tag}
           </span>
