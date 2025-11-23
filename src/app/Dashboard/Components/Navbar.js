@@ -19,7 +19,7 @@ export default function Navbar() {
             <div>
               <h1 className="text-xl font-bold text-white tracking-tight flex items-center space-x-2">
                 <span>GSoC Organizations</span>
-                <span className="px-2 py-0.5 text-xs font-semibold bg-emerald-500/20 text-emerald-400 rounded-md border border-emerald-500/30">2024</span>
+                <span className="px-2 py-0.5 text-xs font-semibold bg-emerald-500/20 text-emerald-400 rounded-md border border-emerald-500/30">2025</span>
               </h1>
               <p className="text-xs text-slate-400 font-medium mt-0.5">Explore 200+ Open Source Projects</p>
             </div>

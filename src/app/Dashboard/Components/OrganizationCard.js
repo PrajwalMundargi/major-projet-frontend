@@ -17,7 +17,7 @@ export default function OrganizationCard({ organization }) {
   // On card click, navigate to the dynamic route for the company
   const handleCardClick = () => {
     // Prefer slug if available, else encode company name for URL
-    const orgParam = slug || name;
+  const orgParam = decodeURIComponent(name).toLowerCase().trim();
     router.push(`/Dashboard/${encodeURIComponent(orgParam)}`);
   };
 
