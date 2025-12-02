@@ -17,7 +17,7 @@ export default function HomePage() {
 
   // Fetch data from Flask backend
   useEffect(() => {
-    fetch('http://127.0.0.1:5000/api/organizations')
+    fetch('http://localhost:5000/api/organizations')
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch organizations');
         return res.json();
@@ -45,33 +45,156 @@ export default function HomePage() {
     );
   };
 
-  // --- Render ---
-  if (loading)
-    return <p className="text-center mt-10 text-gray-600 dark:text-gray-400">Loading organizations...</p>;
+  const handleClearFilters = () => {
+    setSearchTerm('');
+    setActiveFilters([]);
+  };
 
-  if (error)
-    return <p className="text-center mt-10 text-red-500">Error: {error}</p>;
+  // --- Render Loading State ---
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+        <Navbar />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-slate-300 text-lg font-medium">Loading organizations...</p>
+            <p className="text-slate-400 text-sm mt-2">Fetching GSoC data</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
+  // --- Render Error State ---
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+        <Navbar />
+        <div className="flex items-center justify-center min-h-[60vh] px-4">
+          <div className="max-w-md text-center">
+            <div className="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-10 h-10 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-bold text-white mb-2">Unable to Load Data</h2>
+            <p className="text-red-400 mb-6">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-lg transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // --- Main Render ---
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <Navbar />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <ProfileOverview />
+        {/* Profile Overview with subtle enhancement */}
+        <div className="mb-8">
+          <ProfileOverview />
+        </div>
 
-        <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+        {/* Search Section */}
+        <div className="mb-6">
+          <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+        </div>
 
-        <FilterTags
-          allTags={allTags}
-          activeFilters={activeFilters}
-          onTagToggle={handleTagToggle}
-        />
+        {/* Stats & Filter Bar */}
+        <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-4 mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            {/* Stats */}
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                <span className="text-slate-300 text-sm">
+                  <span className="font-semibold text-white">{filteredOrganizations.length}</span>
+                  {' '}of{' '}
+                  <span className="font-semibold text-white">{organizations.length}</span>
+                  {' '}organizations
+                </span>
+              </div>
+              {activeFilters.length > 0 && (
+                <div className="flex items-center gap-2">
+                  <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                  </svg>
+                  <span className="text-emerald-400 text-sm font-medium">
+                    {activeFilters.length} filter{activeFilters.length !== 1 ? 's' : ''} active
+                  </span>
+                </div>
+              )}
+            </div>
 
-        <p className="text-sm text-gray-600 dark:text-gray-400 mt-4 mb-6">
-          Showing {filteredOrganizations.length} of {organizations.length} organizations
-        </p>
+            {/* Clear Filters Button */}
+            {(searchTerm || activeFilters.length > 0) && (
+              <button
+                onClick={handleClearFilters}
+                className="flex items-center gap-2 px-4 py-2 bg-slate-700/50 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg transition-colors text-sm font-medium"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Clear Filters
+              </button>
+            )}
+          </div>
 
-        <OrganizationList organizations={filteredOrganizations} />
+          {/* Active Filters Display */}
+          {activeFilters.length > 0 && (
+            <div className="mt-4 pt-4 border-t border-slate-700">
+              <div className="flex flex-wrap gap-2">
+                {activeFilters.map((filter) => (
+                  <span
+                    key={filter}
+                    className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded-full text-sm border border-emerald-500/30"
+                  >
+                    {filter}
+                    <button
+                      onClick={() => handleTagToggle(filter)}
+                      className="hover:text-emerald-300 transition-colors"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Empty State */}
+        {filteredOrganizations.length === 0 ? (
+          <div className="bg-slate-800/30 backdrop-blur-sm border border-slate-700 rounded-2xl p-12 text-center">
+            <div className="w-16 h-16 bg-slate-700/50 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold text-white mb-2">No organizations found</h3>
+            <p className="text-slate-400 mb-6">
+              Try adjusting your search or filters to find what you're looking for
+            </p>
+            <button
+              onClick={handleClearFilters}
+              className="px-6 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-lg transition-colors"
+            >
+              Clear All Filters
+            </button>
+          </div>
+        ) : (
+          <OrganizationList organizations={filteredOrganizations} />
+        )}
       </div>
 
       <Footer />
